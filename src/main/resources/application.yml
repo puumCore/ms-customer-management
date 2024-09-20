@@ -36,6 +36,8 @@ rabbit-communications:
   exchange: communication
   key: com.email
 
+
+
 springdoc:
   api-docs:
     path: /api-docs

@@ -8,7 +8,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.puumcore.customermanagement.model.entity.Customer;
-import org.puumcore.customermanagement.service.CustomerService;
+import org.puumcore.customermanagement.repository.AuthOps;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,8 +25,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class CustomBasicAuthFilter extends OncePerRequestFilter {
 
-    private final CustomerService service;
-
+    private final AuthOps authOps;
 
     /**
      * Can be overridden in subclasses for custom filtering control,
@@ -57,7 +56,7 @@ public class CustomBasicAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         final String authorizationHeaderValue = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (authorizationHeaderValue != null && authorizationHeaderValue.startsWith("BASIC")) {
-            Customer userFromToken = service.getUserFromToken(authorizationHeaderValue);
+            Customer userFromToken = authOps.getUserFromToken(authorizationHeaderValue);
 
             final List<SimpleGrantedAuthority> grantedAuthorities = new ArrayList<>(
                     Collections.singletonList(new SimpleGrantedAuthority(userFromToken.getRole().name()))

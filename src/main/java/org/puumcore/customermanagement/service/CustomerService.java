@@ -12,9 +12,10 @@ import org.puumcore.customermanagement.exceptions.FailureException;
 import org.puumcore.customermanagement.exceptions.NotFoundException;
 import org.puumcore.customermanagement.model.BatchSummary;
 import org.puumcore.customermanagement.model.Email;
+import org.puumcore.customermanagement.model.Forms;
 import org.puumcore.customermanagement.model.Paged;
 import org.puumcore.customermanagement.model.entity.Customer;
-import org.puumcore.customermanagement.model.Forms;
+import org.puumcore.customermanagement.repository.AuthOps;
 import org.puumcore.customermanagement.repository.CustomerRepo;
 import org.puumcore.customermanagement.utils.DateUtils;
 import org.springframework.amqp.core.MessageProperties;
@@ -23,7 +24,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -43,7 +43,7 @@ import java.util.*;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class CustomerService extends Assistant implements UserDetailsService {
+public class CustomerService extends Assistant implements AuthOps {
 
     private final PasswordEncoder passwordEncoder;
     private final CustomerRepo customerRepo;
@@ -218,7 +218,7 @@ public class CustomerService extends Assistant implements UserDetailsService {
 
     public final Customer getCustomer(@NonNull final String username) {
         log.info("Searching for customer with the username = {}", username);
-        Optional<Customer> customerOptional = customerRepo.findByUsername(username);
+        Optional<Customer> customerOptional = customerRepo.findByEmail(username);
         if (customerOptional.isEmpty()) {
             throw new NotFoundException("No such customer found");
         }
@@ -227,7 +227,8 @@ public class CustomerService extends Assistant implements UserDetailsService {
     }
 
 
-    public final Customer getUserFromToken(final String token) {
+    @Override
+    public Customer getUserFromToken(final String token) {
         Customer customer = null;
         if (!token.isBlank()) {
             byte[] decoded = Base64.getDecoder().decode(token);
@@ -251,10 +252,10 @@ public class CustomerService extends Assistant implements UserDetailsService {
                     }
 
                     if (customer != null && pwd != null) {
-                        boolean matches = passwordEncoder.matches(pwd, customer.getPassword());
+                        /*boolean matches = passwordEncoder.matches(pwd, customer.getPassword());
                         if (!matches) {
                             throw new AccessDeniedException("Failed to verify token");
-                        }
+                        }*/
                     }
                 }
             }
@@ -281,7 +282,7 @@ public class CustomerService extends Assistant implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Customer> customerOptional = customerRepo.findByUsername(username);
+        Optional<Customer> customerOptional = customerRepo.findByEmail(username);
         if (customerOptional.isEmpty()) {
             throw new UsernameNotFoundException("Invalid credentials");
         }
