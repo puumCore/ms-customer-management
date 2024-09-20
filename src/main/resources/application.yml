@@ -1,0 +1,43 @@
+server:
+  error:
+    include-message: ALWAYS
+    include-binding-errors: ALWAYS
+    include-stacktrace: NEVER
+    include-exception: false
+  port: 8080
+
+spring:
+  gson:
+    pretty-printing: true
+  jackson:
+    default-property-inclusion: NON_NULL
+    time-zone: Africa/Nairobi
+  application:
+    name: ms-customer-management
+  datasource:
+    hikari:
+      maximumPoolSize: 15
+      minimumIdle: 10
+      maxLifetime: 1200000 #20min
+      idleTimeout: 900000 #15min
+      keepaliveTime: 600000 #10min
+      poolName: Local-Dev
+    url: jdbc:postgresql://localhost:5432/kcb_interview?currentSchema=public
+    username: developer
+    password: XUQ2As8z
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    virtual-host: kcb
+    username: developer
+    password: G8ro_Hw8tdhr1Lz]s2~|
+
+rabbit-communications:
+  exchange: communication
+  key: com.email
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui
