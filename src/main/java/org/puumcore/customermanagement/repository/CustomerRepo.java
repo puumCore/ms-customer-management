@@ -17,8 +17,6 @@ import java.util.Optional;
 @Repository
 public interface CustomerRepo extends CrudRepository<Customer, Long>, PagingAndSortingRepository<Customer, Long> {
 
-    Optional<Customer> findByUsername(String username);
-
     Optional<Customer> findByEmail(String email);
 
 }
