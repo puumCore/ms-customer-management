@@ -24,7 +24,7 @@ spring:
       poolName: Local-Dev
     url: jdbc:postgresql://localhost:5432/kcb_interview?currentSchema=public
     username: developer
-    password: XUQ2As8z
+    password: 123456789
   rabbitmq:
     host: rabbitmq
     port: 5672
